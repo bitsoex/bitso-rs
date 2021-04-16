@@ -1,10 +1,10 @@
 [package]
 name = "bitsors"
-version = "1.0.0"
+version = "1.0.1"
 license = "MIT"
 readme = "README.md"
 description = "A Rust wrapper for the Bitso API"
-homepage = "https://github.com/arturomf94/bitsors/"
+homepage = "https://github.com/bitsoex/bitso-rs/"
 keywords = ["bitso", "api", "cryptocurrencies"]
 authors = ["arturo <arturomf94@gmail.com>"]
 edition = "2018"
