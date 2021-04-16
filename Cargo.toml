@@ -12,6 +12,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+tokio = { version = "1.5.0", features = ["net"] }
 reqwest = { version = "0.11.0", features = ["json"] }
 lazy_static = "1.4.0"
 dotenv = "0.15.0"
@@ -21,10 +22,11 @@ serde_json = "1.0.61"
 anyhow = "1.0.37"
 hex = "0.4.2"
 openssl = "0.10.32"
-tungstenite = "0.13.0"
+tokio-tungstenite = { version = "0.14.0", features = ["native-tls"] }
 strum = "0.20"
 strum_macros = "0.20"
+futures-util = "0.3.14"
 
 [dev-dependencies]
-tokio = { version = "1.0.1", features = ["full"] }
+tokio = { version = "1.5.0", features = ["full"] }
 mockito = "0.28.0"

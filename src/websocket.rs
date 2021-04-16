@@ -3,8 +3,13 @@ use std::str::FromStr;
 
 pub use strum::{EnumCount, IntoEnumIterator};
 
+use futures_util::{SinkExt, StreamExt};
 use strum_macros::{AsRefStr, Display, EnumCount, EnumIter, EnumString};
-use tungstenite::{client::AutoStream, connect, error::Result, Message, WebSocket};
+use tokio::net::TcpStream;
+use tokio_tungstenite::{
+    tungstenite::{error::Result, Error, Message},
+    MaybeTlsStream, WebSocketStream,
+};
 
 /// Bitso WebSocket object.
 ///
@@ -15,72 +20,97 @@ use tungstenite::{client::AutoStream, connect, error::Result, Message, WebSocket
 /// # Examples
 /// ```no_run
 /// use bitsors::websocket::*;
-///
-/// let mut socket = BitsoWebSocket::new().unwrap();
+/// # #[tokio::main]
+/// # async fn main() {
+/// let mut socket = BitsoWebSocket::new().await.unwrap();
 ///
 /// // You can subscribe to a specific orders channel
-/// socket.subscribe(Subscription::Orders, Books::BtcMxn).unwrap();
+/// socket.subscribe(Subscription::Orders, Books::BtcMxn).await.unwrap();
 ///                                                         
 /// // You can also iterate over all the Books and Subscription channels
 /// for book in Books::iter() {
 ///     for subs in Subscription::iter() {
-///         socket.subscribe(subs, book).unwrap();
+///         socket.subscribe(subs, book).await.unwrap();
 ///     }
 /// }
 ///
 /// loop {
-///     match socket.read().unwrap() {
+///     match socket.read().await.unwrap() {
 ///         Response::Orders(r) => println!("{:?}", r),
 ///         Response::Trades(r) => println!("{:?}", r),
 ///         Response::DiffOrders(r) => println!("{:?}", r),
 ///     }
 /// }
+/// # }
 /// ```
 
-#[derive(Debug)]
 pub struct BitsoWebSocket {
-    socket: WebSocket<AutoStream>,
+    socket: WebSocketStream<MaybeTlsStream<TcpStream>>,
 }
 
 impl BitsoWebSocket {
     /// Creates a new WebSocket connection.
-    pub fn new() -> Result<Self> {
-        let (socket, _) = connect("wss://ws.bitso.com")?;
+    pub async fn new() -> Result<Self> {
+        let (socket, _) = tokio_tungstenite::connect_async("wss://ws.bitso.com").await?;
         Ok(BitsoWebSocket { socket })
     }
 
     /// Closes an existing WebSocket connection.
-    pub fn close(&mut self) -> Result<()> {
-        self.socket.close(None)
+    pub async fn close(&mut self) -> Result<()> {
+        self.socket.close(None).await
     }
 
     /// Creates a subscription request to a given channel.
-    pub fn subscribe(&mut self, subscription_type: Subscription, book: Books) -> Result<String> {
+    pub async fn subscribe(
+        &mut self,
+        subscription_type: Subscription,
+        book: Books,
+    ) -> Result<String> {
         let request = format!(
             r#"{{"action":"subscribe","book":"{}","type":"{}"}}"#,
             book.as_ref(),
             subscription_type.as_ref()
         );
-        self.socket.write_message(Message::Text(request))?;
-        self.socket.read_message()?.into_text()
+        self.socket.send(Message::Text(request)).await?;
+        self.socket
+            .next()
+            .await
+            .ok_or(Error::AlreadyClosed)??
+            .into_text()
     }
 
     /// Reads the response from the WebSocket connection.
-    pub fn read(&mut self) -> Result<Response> {
-        let mut data = self.socket.read_message()?.into_text()?;
-        while data.contains(r#""type":"ka""#) || data.contains("subscribe") {
-            //ignore keep alive and subscribe messages
-            data = self.socket.read_message()?.into_text()?;
+    pub async fn read(&mut self) -> Result<Response> {
+        let mut response = self.socket.next().await.ok_or(Error::AlreadyClosed)??;
+        let mut sub_type = response
+            .to_text()?
+            .trim_start_matches(r#"{"type":""#)
+            .split('"')
+            .next()
+            .unwrap_or("");
+        let mut subscription_type = Subscription::from_str(sub_type);
+
+        // ignore keep alive and subscribe messages
+        while subscription_type.is_err() {
+            response = self.socket.next().await.ok_or(Error::AlreadyClosed)??;
+            sub_type = response
+                .to_text()?
+                .trim_start_matches(r#"{"type":""#)
+                .split('"')
+                .next()
+                .unwrap_or("");
+            subscription_type = Subscription::from_str(sub_type);
         }
-        let first_comma = data.find(':').unwrap();
-        let second_comma = data[first_comma + 1..].find(',').unwrap() + first_comma;
-        match Subscription::from_str(&data[first_comma + 2..second_comma]).unwrap() {
-            Subscription::Trades => Ok(Response::Trades(serde_json::from_str(&data).unwrap())),
-            Subscription::DiffOrders => {
-                Ok(Response::DiffOrders(serde_json::from_str(&data).unwrap()))
-            }
-            Subscription::Orders => Ok(Response::Orders(serde_json::from_str(&data).unwrap())),
-        }
+
+        let data = response.to_text()?;
+
+        let response = match subscription_type.unwrap() {
+            Subscription::Trades => Response::Trades(serde_json::from_str(data).unwrap()),
+            Subscription::DiffOrders => Response::DiffOrders(serde_json::from_str(data).unwrap()),
+            Subscription::Orders => Response::Orders(serde_json::from_str(data).unwrap()),
+        };
+
+        Ok(response)
     }
 }
 
