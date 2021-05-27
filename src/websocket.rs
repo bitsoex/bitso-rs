@@ -197,4 +197,6 @@ pub enum Books {
     DaiArs,
     #[strum(serialize = "btc_brl")]
     BtcBrl,
+    #[strum(serialize = "eth_brl")]
+    EthBrl,
 }
