@@ -201,4 +201,8 @@ pub enum Books {
     EthBrl,
     #[strum(serialize = "btc_usdt")]
     BtcUsdt,
+    #[strum(serialize = "mana_usd")]
+    ManaUsd,
+    #[strum(serialize = "ltc_usd")]
+    LtcUsd,
 }
