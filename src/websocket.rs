@@ -205,4 +205,8 @@ pub enum Books {
     ManaUsd,
     #[strum(serialize = "ltc_usd")]
     LtcUsd,
+    #[strum(serialize = "usd_mxn")]
+    UsdMxn,
+    #[strum(serialize = "usd_ars")]
+    UsdArs,
 }
