@@ -209,4 +209,8 @@ pub enum Books {
     UsdMxn,
     #[strum(serialize = "usd_ars")]
     UsdArs,
+    #[strum(serialize = "usd_brl")]
+    UsdBrl,
+    #[strum(serialize = "comp_usd")]
+    CompUsd,
 }
