@@ -213,4 +213,6 @@ pub enum Books {
     UsdBrl,
     #[strum(serialize = "comp_usd")]
     CompUsd,
+    #[strum(serialize = "link_usd")]
+    LinkUsd,
 }
