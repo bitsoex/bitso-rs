@@ -217,4 +217,6 @@ pub enum Books {
     LinkUsd,
     #[strum(serialize = "uni_usd")]
     UniUsd,
+    #[strum(serialize = "aave_usd")]
+    AaveUsd,
 }
