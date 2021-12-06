@@ -221,4 +221,6 @@ pub enum Books {
     AaveUsd,
     #[strum(serialize = "chz_usd")]
     ChzUsd,
+    #[strum(serialize = "axs_usd")]
+    AxsUsd,
 }
