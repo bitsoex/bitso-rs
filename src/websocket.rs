@@ -229,4 +229,8 @@ pub enum Books {
     YfiUsd,
     #[strum(serialize = "sand_usd")]
     SandUsd,
+    #[strum(serialize = "shib_usd")]
+    ShibUsd,
+    #[strum(serialize = "snx_usd")]
+    SnxUsd,
 }
