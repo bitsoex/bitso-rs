@@ -1,6 +1,6 @@
 [package]
 name = "bitsors"
-version = "1.0.6"
+version = "1.0.7"
 license = "MIT"
 readme = "README.md"
 description = "A Rust wrapper for the Bitso API"
