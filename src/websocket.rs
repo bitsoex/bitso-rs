@@ -235,4 +235,8 @@ pub enum Books {
     SnxUsd,
     #[strum(serialize = "matic_usd")]
     MaticUsd,
+    #[strum(serialize = "mkr_usd")]
+    MkrUsd,
+    #[strum(serialize = "enj_usd")]
+    EnjUsd,
 }
