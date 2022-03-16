@@ -823,7 +823,7 @@ async fn test_open_orders() {
                 "oid": "543cr2v32a1h68443",
                 "origin_id": "origin_id1",
                 "side": "buy",
-                "status": "partial-fill",
+                "status": "partially filled",
                 "type": "limit"
             }, {
                 "book": "btc_mxn",
@@ -887,7 +887,7 @@ async fn test_open_orders_optional_params() {
                 "oid": "543cr2v32a1h68443",
                 "origin_id": "origin_id1",
                 "side": "buy",
-                "status": "partial-fill",
+                "status": "partially filled",
                 "type": "limit"
             }, {
                 "book": "btc_mxn",
@@ -955,7 +955,7 @@ async fn test_lookup_orders_with_optional_params() {
                 "price": "5600.00",
                 "oid": "543cr2v32a1h6844",
                 "side": "buy",
-                "status": "partial-fill",
+                "status": "partially filled",
                 "type": "limit"
             }, {
                 "book": "btc_mxn",
@@ -1006,7 +1006,7 @@ async fn test_lookup_orders() {
                 "price": "5600.00",
                 "oid": "543cr2v32a1h6844",
                 "side": "buy",
-                "status": "partial-fill",
+                "status": "partially filled",
                 "type": "limit"
             }]
         }"#,
