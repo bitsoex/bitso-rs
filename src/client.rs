@@ -586,7 +586,6 @@ impl Bitso {
         let mut url = String::from("/v3/user_trades/");
         let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
-        // params.insert("book".to_owned(), book.to_string());
         if let Some(b) = book {
             params.insert("book".to_owned(), b.to_string());
         }
