@@ -806,7 +806,7 @@ impl Bitso {
     }
 
     /// Make a request to get lookup orders
-    /// See: <https://bitso.com/api_info#lookup-orders>
+    /// See: <https://bitso.com/api_info#funding-destination>
     pub async fn get_funding_destination(
         &self,
         fund_currency: &str,
