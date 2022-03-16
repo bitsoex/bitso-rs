@@ -644,8 +644,38 @@ async fn test_fundings() {
 /// Test successful request to get user_trades
 #[tokio::test]
 async fn test_user_trades() {
-    let _mock = mock("GET", "/v3/user_trades/")
+    let mut _mock = mock("GET", "/v3/user_trades/")
         .match_query(Matcher::UrlEncoded("book".into(), "btc_mxn".into()))
+        .with_status(200)
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                "book": "btc_mxn",
+                "major": "-0.25232073",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "minor": "1013.540958479115",
+                "fees_amount": "-10.237787459385",
+                "fees_currency": "mxn",
+                "price": "4057.45",
+                "tid": 51756,
+                "oid": "g81d3y1ywri0yg8m",
+                "side": "sell",
+                "maker_side": "sell"
+            }]
+        }"#,
+        )
+        .create();
+    let bitso = Bitso::default()
+        .prefix(mockito::server_url().as_str())
+        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
+        .build();
+    let mut result = bitso
+        .get_user_trades(Some("btc_mxn"), None, None, None)
+        .await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
+    _mock = mock("GET", "/v3/user_trades/")
         .with_status(200)
         .with_body(
             r#"{
@@ -678,11 +708,7 @@ async fn test_user_trades() {
         }"#,
         )
         .create();
-    let bitso = Bitso::default()
-        .prefix(mockito::server_url().as_str())
-        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
-        .build();
-    let result = bitso.get_user_trades("btc_mxn", None, None, None).await;
+    result = bitso.get_user_trades(None, None, None, None).await;
     assert!(result.is_ok());
     println!("{:?}", result);
 }
