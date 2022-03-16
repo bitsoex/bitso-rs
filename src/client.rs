@@ -578,7 +578,7 @@ impl Bitso {
     /// See: <https://bitso.com/api_info#user-trades>
     pub async fn get_user_trades(
         &self,
-        book: &str,
+        book: Option<&str>,
         tid: Option<&str>,
         tids: Option<Vec<&str>>,
         optional_params: Option<OptionalParams<'_>>,
@@ -586,7 +586,9 @@ impl Bitso {
         let mut url = String::from("/v3/user_trades/");
         let mut params = HashMap::new();
         let client_credentials = self.client_credentials_manager.as_ref();
-        params.insert("book".to_owned(), book.to_string());
+        if let Some(b) = book {
+            params.insert("book".to_owned(), b.to_string());
+        }
         if let Some(t) = tid {
             url.push_str(t);
             url.push('/');
@@ -655,7 +657,8 @@ impl Bitso {
     pub async fn get_open_orders<'a>(
         &self,
         book: Option<&str>,
-        optional_params: Option<OptionalParams<'_>>,
+        currency: Option<&str>,
+        limit: Option<&u8>,
     ) -> Result<JSONResponse<Vec<OpenOrdersPayload>>> {
         let url = String::from("/v3/open_orders");
         let mut params = HashMap::new();
@@ -663,17 +666,11 @@ impl Bitso {
         if let Some(b) = book {
             params.insert("book".to_owned(), b.to_string());
         }
-        // Add generic optional parameters
-        if let Some(op) = optional_params {
-            if let Some(m) = op.marker {
-                params.insert("marker".to_owned(), m.to_string());
-            }
-            if let Some(s) = op.sort {
-                params.insert("sort".to_owned(), s.to_string());
-            }
-            if let Some(l) = op.limit {
-                params.insert("limit".to_owned(), l.to_string());
-            }
+        if let Some(c) = currency {
+            params.insert("currency".to_owned(), c.to_string());
+        }
+        if let Some(l) = limit {
+            params.insert("limit".to_owned(), l.to_string());
         }
         match client_credentials {
             Some(c) => {
@@ -809,7 +806,7 @@ impl Bitso {
     }
 
     /// Make a request to get lookup orders
-    /// See: <https://bitso.com/api_info#lookup-orders>
+    /// See: <https://bitso.com/api_info#funding-destination>
     pub async fn get_funding_destination(
         &self,
         fund_currency: &str,
