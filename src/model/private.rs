@@ -197,6 +197,7 @@ pub struct OrderTradesPayload {
     pub oid: Option<String>,
     pub client_id: Option<String>,
     pub side: Option<String>,
+    pub maker_side: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

@@ -661,7 +661,7 @@ async fn test_user_trades() {
                 "tid": 51756,
                 "oid": "g81d3y1ywri0yg8m",
                 "side": "sell",
-                "make_side": "sell"
+                "maker_side": "sell"
             }, {
                 "book": "eth_mxn",
                 "major": "4.86859395",
@@ -673,7 +673,7 @@ async fn test_user_trades() {
                 "tid": 51757,
                 "oid": "19vaqiv72drbphig",
                 "side": "buy",
-                "make_side": "sell"
+                "maker_side": "sell"
             }]
         }"#,
         )
@@ -707,7 +707,7 @@ async fn test_order_trades() {
                     "oid": "Jvqrschkgdkc1go3",
                     "origin_id": "origin_id1",
                     "side": "sell",
-                    "make_side": "sell"
+                    "maker_side": "sell"
                 },
                 {
                     "book": "btc_mxn",
@@ -721,7 +721,7 @@ async fn test_order_trades() {
                     "oid": "Jvqrschkgdkc1go3",
                     "origin_id": "origin_id1",
                     "side": "sell",
-                    "make_side": "sell"
+                    "maker_side": "sell"
                 }
             ]
         }"#,
@@ -760,7 +760,7 @@ async fn test_order_trades_origin_id() {
                     "oid": "Jvqrschkgdkc1go3",
                     "origin_id": "origin_id1",
                     "side": "sell",
-                    "make_side": "sell"
+                    "maker_side": "sell"
                 }]
         }"#,
         )
