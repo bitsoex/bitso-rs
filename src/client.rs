@@ -658,7 +658,8 @@ impl Bitso {
     pub async fn get_open_orders<'a>(
         &self,
         book: Option<&str>,
-        optional_params: Option<OptionalParams<'_>>,
+        currency: Option<&str>,
+        limit: Option<&u8>,
     ) -> Result<JSONResponse<Vec<OpenOrdersPayload>>> {
         let url = String::from("/v3/open_orders");
         let mut params = HashMap::new();
@@ -666,17 +667,11 @@ impl Bitso {
         if let Some(b) = book {
             params.insert("book".to_owned(), b.to_string());
         }
-        // Add generic optional parameters
-        if let Some(op) = optional_params {
-            if let Some(m) = op.marker {
-                params.insert("marker".to_owned(), m.to_string());
-            }
-            if let Some(s) = op.sort {
-                params.insert("sort".to_owned(), s.to_string());
-            }
-            if let Some(l) = op.limit {
-                params.insert("limit".to_owned(), l.to_string());
-            }
+        if let Some(c) = currency {
+            params.insert("currency".to_owned(), c.to_string());
+        }
+        if let Some(l) = limit {
+            params.insert("limit".to_owned(), l.to_string());
         }
         match client_credentials {
             Some(c) => {

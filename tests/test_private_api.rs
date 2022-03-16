@@ -803,76 +803,12 @@ async fn test_order_trades_origin_id() {
 /// Test successful request to get open_orders
 #[tokio::test]
 async fn test_open_orders() {
-    let _mock = mock("GET", "/v3/open_orders")
+    let mut _mock = mock("GET", "/v3/open_orders")
         .with_status(200)
-        .match_query(Matcher::AllOf(vec![Matcher::UrlEncoded(
-            "book".into(),
-            "btc_mxn".into(),
-        )]))
-        .with_body(
-            r#"{
-            "success": true,
-            "payload": [{
-                "book": "btc_mxn",
-                "original_amount": "0.01000000",
-                "unfilled_amount": "0.00500000",
-                "original_value": "56.0",
-                "created_at": "2016-04-08T17:52:31.000+00:00",
-                "updated_at": "2016-04-08T17:52:51.000+00:00",
-                "price": "5600.00",
-                "oid": "543cr2v32a1h68443",
-                "origin_id": "origin_id1",
-                "side": "buy",
-                "status": "partially filled",
-                "type": "limit"
-            }, {
-                "book": "btc_mxn",
-                "original_amount": "0.12680000",
-                "unfilled_amount": "0.12680000",
-                "original_value": "507.2",
-                "created_at": "2016-04-08T17:52:31.000+00:00",
-                "updated_at": "2016-04-08T17:52:41.000+00:00",
-                "price": "4000.00",
-                "oid": "qlbga6b600n3xta7",
-                "side": "sell",
-                "status": "open",
-                "type": "limit"
-            }, {
-                "book": "btc_mxn",
-                "original_amount": "1.12560000",
-                "unfilled_amount": "1.12560000",
-                "original_value": "6892.66788",
-                "created_at": "2016-04-08T17:52:31.000+00:00",
-                "updated_at": "2016-04-08T17:52:41.000+00:00",
-                "price": "6123.55",
-                "oid": "d71e3xy2lowndkfm",
-                "side": "sell",
-                "status": "open",
-                "type": "limit"
-            }]
-        }"#,
-        )
-        .create();
-    let bitso = Bitso::default()
-        .prefix(mockito::server_url().as_str())
-        .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
-        .build();
-    let result = bitso.get_open_orders(Some("btc_mxn"), None).await;
-    assert!(result.is_ok());
-    println!("{:?}", result);
-}
-
-/// Test successful request to get open_orders with optional params
-#[tokio::test]
-async fn test_open_orders_optional_params() {
-    let _mock = mock("GET", "/v3/open_orders")
         .match_query(Matcher::AllOf(vec![
             Matcher::UrlEncoded("book".into(), "btc_mxn".into()),
-            Matcher::UrlEncoded("marker".into(), "51755".into()),
-            Matcher::UrlEncoded("sort".into(), "asc".into()),
-            Matcher::UrlEncoded("limit".into(), "1".into()),
+            Matcher::UrlEncoded("currency".into(), "mxn".into()),
         ]))
-        .with_status(200)
         .with_body(
             r#"{
             "success": true,
@@ -921,16 +857,40 @@ async fn test_open_orders_optional_params() {
         .prefix(mockito::server_url().as_str())
         .client_credentials_manager(CLIENT_CREDENTIAL.lock().unwrap().clone())
         .build();
-    let optional_params = OptionalParams {
-        marker: Some(&51755),
-        sort: Some("asc"),
-        limit: Some(&1),
-    };
-    let result = bitso
-        .get_open_orders(Some("btc_mxn"), Some(optional_params))
+    let mut result = bitso
+        .get_open_orders(Some("btc_mxn"), Some("mxn"), None)
         .await;
-    println!("{:?}", result);
     assert!(result.is_ok());
+    println!("{:?}", result);
+    _mock = mock("GET", "/v3/open_orders")
+        .with_status(200)
+        .match_query(Matcher::AllOf(vec![
+            Matcher::UrlEncoded("book".into(), "btc_mxn".into()),
+            Matcher::UrlEncoded("limit".into(), "1".into()),
+        ]))
+        .with_body(
+            r#"{
+            "success": true,
+            "payload": [{
+                "book": "btc_mxn",
+                "original_amount": "0.01000000",
+                "unfilled_amount": "0.00500000",
+                "original_value": "56.0",
+                "created_at": "2016-04-08T17:52:31.000+00:00",
+                "updated_at": "2016-04-08T17:52:51.000+00:00",
+                "price": "5600.00",
+                "oid": "543cr2v32a1h68443",
+                "origin_id": "origin_id1",
+                "side": "buy",
+                "status": "partially filled",
+                "type": "limit"
+            }]
+        }"#,
+        )
+        .create();
+    result = bitso.get_open_orders(Some("btc_mxn"), None, Some(&1)).await;
+    assert!(result.is_ok());
+    println!("{:?}", result);
 }
 
 /// Test successful request to get lookup_orders with optional params

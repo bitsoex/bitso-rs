@@ -17,6 +17,6 @@ async fn main() {
     let bitso = Bitso::default()
         .client_credentials_manager(client_credential)
         .build();
-    let result = bitso.get_open_orders(Some("btc_mxn"), None).await;
+    let result = bitso.get_open_orders(Some("btc_mxn"), None, None).await;
     println!("{:?}", result);
 }
