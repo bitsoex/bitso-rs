@@ -247,4 +247,6 @@ pub enum Books {
     GalaUsd,
     #[strum(serialize = "ada_usd")]
     AdaUsd,
+    #[strum(serialize = "lrc_usd")]
+    LrcUsd,
 }
