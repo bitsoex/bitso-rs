@@ -259,4 +259,6 @@ pub enum Books {
     OmgUsd,
     #[strum(serialize = "sol_usd")]
     SolUsd,
+    #[strum(serialize = "qnt_usd")]
+    QntUsd,
 }
