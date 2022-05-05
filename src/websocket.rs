@@ -263,4 +263,6 @@ pub enum Books {
     QntUsd,
     #[strum(serialize = "dot_usd")]
     DotUsd,
+    #[strum(serialize = "doge_usd")]
+    DogeUsd,
 }
