@@ -271,4 +271,6 @@ pub enum Books {
     XrpCop,
     #[strum(serialize = "usd_cop")]
     UsdCop,
+    #[strum(serialize = "btc_cop")]
+    BtcCop,
 }
