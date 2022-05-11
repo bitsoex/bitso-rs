@@ -265,4 +265,10 @@ pub enum Books {
     DotUsd,
     #[strum(serialize = "doge_usd")]
     DogeUsd,
+    #[strum(serialize = "eth_cop")]
+    EthCop,
+    #[strum(serialize = "xrp_cop")]
+    XrpCop,
+    #[strum(serialize = "usd_cop")]
+    UsdCop,
 }
