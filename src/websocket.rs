@@ -275,4 +275,6 @@ pub enum Books {
     BtcCop,
     #[strum(serialize = "bal_usd")]
     BalUsd,
+    #[strum(serialize = "trx_usd")]
+    TrxUsd,
 }
